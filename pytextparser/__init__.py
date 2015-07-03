@@ -4,6 +4,7 @@ from __future__ import unicode_literals, print_function, division
 import re
 import math
 import unicodedata
+import pkg_resources
 
 from copy import copy
 from string import ascii_letters, digits, punctuation
@@ -34,9 +35,13 @@ _punctuation = _punctuation.replace('-', '')
 _re_punctuation = re.compile('[%s]' % re.escape(_punctuation))
 _re_token = re.compile(r'[a-z0-9]+')
 
-_url_pattern = r'(https?:\/\/)?(([\da-z-]+)\.){1,2}.([a-z\.]{2,6})(/[\/\w \.-]*)*\/?'
+_url_pattern = r'(https?:\/\/)?(([\da-z-]+)\.){1,2}.([a-z\.]{2,6})(/[\/\w \.-]*)*\/?(\?(\w+=\w+&?)+)?'
 _re_full_url = re.compile(r'^%s$' % _url_pattern)
 _re_url = re.compile(_url_pattern)
+
+
+def load_aggressive_stopwords():
+    return pkg_resources.resource_string(__name__, 'stopwords.txt').split('\n')
 
 
 # Determining the best way to calculate tfidf is proving difficult, might need more advanced techniques
@@ -63,7 +68,7 @@ def get_ngrams(token_list, n=2):
         yield token_list[i:i+n]
 
 
-def word_tokenize(text, stopwords=_stopwords, ngrams=None, min_length=3):
+def word_tokenize(text, stopwords=_stopwords, ngrams=None, min_length=3, ignore_numeric=True):
     """
     Parses the given text and yields tokens which represent words within
     the given text. Tokens are assumed to be divided by any form of
@@ -80,7 +85,9 @@ def word_tokenize(text, stopwords=_stopwords, ngrams=None, min_length=3):
         for i in xrange(len(tokens)):
             tokens[i] = tokens[i].strip(punctuation)
 
-            if len(tokens[i]) < min_length or tokens[i] in stopwords or isnumeric(tokens[i]):
+            if len(tokens[i]) < min_length or tokens[i] in stopwords:
+                break
+            if ignore_numeric and isnumeric(tokens[i]):
                 break
         else:
             yield tuple(tokens)
