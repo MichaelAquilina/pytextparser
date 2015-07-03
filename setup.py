@@ -24,7 +24,7 @@ test_requirements = [
 
 setup(
     name='pytextparser',
-    version='0.1.0',
+    version='0.1.1',
     description="Python text parser which provides simple, reliable methods for performing standard text processing operations",
     long_description=readme + '\n\n' + history,
     author="Michael Aquilina",

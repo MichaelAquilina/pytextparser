@@ -41,7 +41,9 @@ _re_url = re.compile(_url_pattern)
 
 
 def load_aggressive_stopwords():
-    return pkg_resources.resource_string(__name__, 'stopwords.txt').split('\n')
+    return pkg_resources.resource_string(
+        __name__, 'stopwords.txt'
+    ).decode('utf8').split('\n')
 
 
 # Determining the best way to calculate tfidf is proving difficult, might need more advanced techniques
@@ -64,7 +66,7 @@ def normalize_unicode(text):
 
 
 def get_ngrams(token_list, n=2):
-    for i in xrange(len(token_list) - n + 1):
+    for i in range(len(token_list) - n + 1):
         yield token_list[i:i+n]
 
 
@@ -82,7 +84,7 @@ def word_tokenize(text, stopwords=_stopwords, ngrams=None, min_length=3, ignore_
 
     matched_tokens = re.findall(_re_token, text.lower())
     for tokens in get_ngrams(matched_tokens, ngrams):
-        for i in xrange(len(tokens)):
+        for i in range(len(tokens)):
             tokens[i] = tokens[i].strip(punctuation)
 
             if len(tokens[i]) < min_length or tokens[i] in stopwords:
